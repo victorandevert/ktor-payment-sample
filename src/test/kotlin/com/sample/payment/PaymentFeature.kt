@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import org.koin.test.junit5.AutoCloseKoinTest
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -21,9 +23,10 @@ import java.nio.file.Paths
 class PaymentFeature: AutoCloseKoinTest() {
 
     private val mockSetup = module {
-        single<PaymentRepository> { PaymentMemoryPaymentRepository() }
+        single<PaymentRepository> {
+            mock {on { get() } doReturn emptyList()}
+        }
     }
-
 
     @Test
     fun `should return all stored payments`() {
@@ -43,7 +46,7 @@ class PaymentFeature: AutoCloseKoinTest() {
         withTestApplication(Application::module) {
             handleRequest(Get, "/payments").apply {
                 assertThat(response.status()).isEqualTo(NotFound)
-                assertThat(response.content).isEqualTo("payments not found")
+                assertThat(response.content).isEqualTo("Payments not found")
             }
         }
     }
