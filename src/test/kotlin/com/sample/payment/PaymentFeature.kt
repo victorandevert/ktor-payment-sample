@@ -23,7 +23,7 @@ class PaymentFeature: AutoCloseKoinTest() {
 
     private val mockSetup = module {
         single<PaymentRepository> {
-            mock {on { get() } doReturn emptyList()}
+            mock {on { getAll() } doReturn emptyList()}
         }
     }
 
@@ -33,10 +33,20 @@ class PaymentFeature: AutoCloseKoinTest() {
         withTestApplication(Application::module) {
             handleRequest(Get, "/payments").apply {
                 assertThat(response.status()).isEqualTo(OK)
-                assertThat(response.content).isEqualToIgnoringWhitespace(getJsonFromFile("payment/payment-methods-response.json"))
+                assertThat(response.content).isEqualToIgnoringWhitespace(getJsonFromFile("payment/all-payments-response.json"))
             }
         }
+    }
 
+    @Test
+    fun `should return a specific payment`() {
+        startKoin { modules(setup) }
+        withTestApplication(Application::module) {
+            handleRequest(Get, "/payments/P1235").apply {
+                assertThat(response.status()).isEqualTo(OK)
+                assertThat(response.content).isEqualToIgnoringWhitespace(getJsonFromFile("payment/single-payments-response.json"))
+            }
+        }
     }
 
     @Test
