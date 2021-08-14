@@ -10,10 +10,9 @@ import io.ktor.routing.*
 fun Route.paymentRouting(paymentRepository: PaymentRepository) {
     route("/payments"){
         get {
-            if (paymentRepository.get().isNotEmpty()){
-                call.respond(paymentRepository.get())
-            }else{
-                call.respondText("Payments not found", status = NotFound)
+            when {
+                paymentRepository.get().isNotEmpty() -> call.respond(paymentRepository.get())
+                else -> call.respondText("Payments not found", status = NotFound)
             }
         }
     }
