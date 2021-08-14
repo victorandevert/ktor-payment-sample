@@ -1,8 +1,11 @@
 package com.sample.payment.domain
 
-interface PaymentRepository {
+import arrow.core.Either
 
-    fun add (payment: Payment)
+interface PaymentRepository {
+    
     fun getAll (): List<Payment>
-    fun get(id: String): Payment?
+    fun get(id: String): Either<ErrorPaymentNotFound, Payment>
 }
+
+class ErrorPaymentNotFound
