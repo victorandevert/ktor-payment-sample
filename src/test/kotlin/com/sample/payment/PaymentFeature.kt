@@ -60,6 +60,17 @@ class PaymentFeature: AutoCloseKoinTest() {
         }
     }
 
+    @Test
+    fun `should return an error when a payment cannot be found`() {
+        startKoin { modules(setup) }
+        withTestApplication(Application::module) {
+            handleRequest(Get, "/payments/P0000").apply {
+                assertThat(response.status()).isEqualTo(NotFound)
+                assertThat(response.content).isEqualTo("Missing payment with id P0000")
+            }
+        }
+    }
+
     private fun getJsonFromFile(file: String): String{
         val uri = this::class.java.classLoader.getResource(file).toURI()
         return String(Files.readAllBytes(Paths.get(uri)), StandardCharsets.UTF_8)
