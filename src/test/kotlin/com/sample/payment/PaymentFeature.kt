@@ -1,5 +1,6 @@
 package com.sample.payment
 
+import com.sample.configuration.setup
 import com.sample.module
 import io.ktor.application.*
 import io.ktor.http.HttpMethod.Companion.Get
@@ -7,6 +8,7 @@ import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.server.testing.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.koin.core.context.startKoin
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -15,7 +17,7 @@ class PaymentFeature {
 
     @Test
     fun `should return all stored payments`() {
-
+        startKoin { modules(setup) }
         withTestApplication(Application::module) {
             handleRequest(Get, "/payments").apply {
                 assertThat(response.status()).isEqualTo(OK)
