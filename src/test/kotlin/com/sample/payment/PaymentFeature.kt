@@ -2,18 +2,28 @@ package com.sample.payment
 
 import com.sample.configuration.setup
 import com.sample.module
+import com.sample.payment.domain.PaymentRepository
+import com.sample.payment.infrastructure.PaymentMemoryPaymentRepository
 import io.ktor.application.*
 import io.ktor.http.HttpMethod.Companion.Get
+import io.ktor.http.HttpStatusCode.Companion.NotFound
 import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.server.testing.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.koin.core.context.startKoin
+import org.koin.dsl.module
+import org.koin.test.junit5.AutoCloseKoinTest
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
 
-class PaymentFeature {
+class PaymentFeature: AutoCloseKoinTest() {
+
+    private val mockSetup = module {
+        single<PaymentRepository> { PaymentMemoryPaymentRepository() }
+    }
+
 
     @Test
     fun `should return all stored payments`() {
@@ -25,6 +35,17 @@ class PaymentFeature {
             }
         }
 
+    }
+
+    @Test
+    fun `should return an error when payments cannot be found`() {
+        startKoin { modules(mockSetup) }
+        withTestApplication(Application::module) {
+            handleRequest(Get, "/payments").apply {
+                assertThat(response.status()).isEqualTo(NotFound)
+                assertThat(response.content).isEqualTo("payments not found")
+            }
+        }
     }
 
     private fun getJsonFromFile(file: String): String{
