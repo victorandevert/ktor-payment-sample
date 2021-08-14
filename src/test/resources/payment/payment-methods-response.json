@@ -1,0 +1,17 @@
+[
+  {
+    "id": "P1234",
+    "amount": "120",
+    "paymentMethod": "visa"
+  },
+  {
+    "id": "P1235",
+    "amount": "99",
+    "paymentMethod": "mc"
+  },
+  {
+    "id": "P1236",
+    "amount": "76",
+    "paymentMethod": "amex"
+  }
+]
