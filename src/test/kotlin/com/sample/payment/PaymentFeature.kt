@@ -5,6 +5,7 @@ import com.sample.module
 import com.sample.payment.domain.PaymentRepository
 import io.ktor.application.*
 import io.ktor.http.HttpMethod.Companion.Get
+import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.NotFound
 import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.server.testing.*
@@ -71,6 +72,16 @@ class PaymentFeature: AutoCloseKoinTest() {
         }
     }
 
+    @Test
+    fun `should return an error when a payment id is missing`() {
+        startKoin { modules(setup) }
+        withTestApplication(Application::module) {
+            handleRequest(Get, "/payments/").apply {
+                assertThat(response.status()).isEqualTo(BadRequest)
+                assertThat(response.content).isEqualTo("Missing id")
+            }
+        }
+    }
     private fun getJsonFromFile(file: String): String{
         val uri = this::class.java.classLoader.getResource(file).toURI()
         return String(Files.readAllBytes(Paths.get(uri)), StandardCharsets.UTF_8)
