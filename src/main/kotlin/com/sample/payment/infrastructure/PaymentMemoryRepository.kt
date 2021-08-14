@@ -3,7 +3,7 @@ package com.sample.payment.infrastructure
 import com.sample.payment.domain.Payment
 import com.sample.payment.domain.PaymentRepository
 
-class PaymentMemoryPaymentRepository: PaymentRepository {
+class PaymentMemoryRepository: PaymentRepository {
 
     override fun add(payment: Payment) {
         TODO("Not yet implemented")

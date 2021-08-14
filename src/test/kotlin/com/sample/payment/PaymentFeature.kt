@@ -3,7 +3,6 @@ package com.sample.payment
 import com.sample.configuration.setup
 import com.sample.module
 import com.sample.payment.domain.PaymentRepository
-import com.sample.payment.infrastructure.PaymentMemoryPaymentRepository
 import io.ktor.application.*
 import io.ktor.http.HttpMethod.Companion.Get
 import io.ktor.http.HttpStatusCode.Companion.NotFound
