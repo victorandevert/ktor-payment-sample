@@ -11,9 +11,14 @@ fun Route.paymentRouting(paymentRepository: PaymentRepository) {
     route("/payments"){
         get {
             when {
-                paymentRepository.get().isNotEmpty() -> call.respond(paymentRepository.get())
+                paymentRepository.getAll().isNotEmpty() -> call.respond(paymentRepository.getAll())
                 else -> call.respondText("Payments not found", status = NotFound)
             }
+        }
+        get("{id}") {
+            val id = call.parameters["id"] ?: ""
+            var payment = paymentRepository.get(id) ?: ""
+            call.respond(payment)
         }
     }
 }

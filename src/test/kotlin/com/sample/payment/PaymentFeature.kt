@@ -44,7 +44,7 @@ class PaymentFeature: AutoCloseKoinTest() {
         withTestApplication(Application::module) {
             handleRequest(Get, "/payments/P1235").apply {
                 assertThat(response.status()).isEqualTo(OK)
-                assertThat(response.content).isEqualToIgnoringWhitespace(getJsonFromFile("payment/single-payments-response.json"))
+                assertThat(response.content).isEqualToIgnoringWhitespace(getJsonFromFile("payment/single-payment-response.json"))
             }
         }
     }
