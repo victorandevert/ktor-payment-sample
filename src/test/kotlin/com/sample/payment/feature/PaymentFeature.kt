@@ -5,6 +5,8 @@ import com.sample.module
 import com.sample.payment.domain.PaymentRepository
 import io.ktor.application.*
 import io.ktor.http.HttpMethod.Companion.Get
+import io.ktor.http.HttpMethod.Companion.Post
+import io.ktor.http.HttpStatusCode.Companion.Created
 import io.ktor.http.HttpStatusCode.Companion.NotFound
 import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.server.testing.*
@@ -71,6 +73,20 @@ class PaymentFeature: AutoCloseKoinTest() {
         }
     }
 
+    @Test
+    fun `should return a psp reference when a payment is authorized`() {
+        startKoin { modules(setup) }
+        withTestApplication(Application::module) {
+            handleRequest(Post,"/payments/P2334/authorization") {
+                addHeader("content-type", "application/json")
+                setBody(getJsonFromFile("authorize/authorize-payment-request.json"))
+            }.apply{
+                assertThat(response.status()).isEqualTo(Created)
+                assertThat(response.content).isEqualToIgnoringWhitespace(getJsonFromFile("authorize/authorize-payment-response.json"))
+            }
+        }
+    }
+    
     private fun getJsonFromFile(file: String): String{
         val uri = this::class.java.classLoader.getResource(file).toURI()
         return String(Files.readAllBytes(Paths.get(uri)), StandardCharsets.UTF_8)
