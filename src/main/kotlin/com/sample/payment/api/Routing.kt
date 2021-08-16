@@ -21,7 +21,6 @@ fun Route.paymentRouting(paymentRepository: PaymentRepository) {
         }
         get("{id}") {
             val id = call.parameters["id"].orEmpty()
-
             paymentRepository.get(id).fold(
                 {call.respondText("Missing payment with id $id", status = NotFound)},
                 {call.respond(it)})
