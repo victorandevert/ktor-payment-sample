@@ -1,4 +1,4 @@
-package com.sample.payment
+package com.sample.payment.feature
 
 import com.sample.configuration.setup
 import com.sample.module
@@ -6,6 +6,7 @@ import com.sample.payment.domain.PaymentRepository
 import io.ktor.application.*
 import io.ktor.http.HttpMethod.Companion.Get
 import io.ktor.http.HttpMethod.Companion.Post
+import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.Created
 import io.ktor.http.HttpStatusCode.Companion.NotFound
 import io.ktor.http.HttpStatusCode.Companion.OK
@@ -74,7 +75,7 @@ class PaymentFeature: AutoCloseKoinTest() {
     }
 
     @Test
-    fun `should return a psp reference when a payment is authorized`() {
+    fun `should authorize a payment`() {
         startKoin { modules(setup) }
         withTestApplication(Application::module) {
             handleRequest(Post,"/payments/P2334/authorization") {
@@ -82,7 +83,20 @@ class PaymentFeature: AutoCloseKoinTest() {
                 setBody(getJsonFromFile("authorize/authorize-payment-request.json"))
             }.apply{
                 assertThat(response.status()).isEqualTo(Created)
-                assertThat(response.content).isEqualToIgnoringWhitespace(getJsonFromFile("authorize/authorize-payment-response.json"))
+            }
+        }
+    }
+
+    @Test
+    fun `should return an error when the ids are different`() {
+        startKoin { modules(setup) }
+        withTestApplication(Application::module) {
+            handleRequest(Post,"/payments/P7777/authorization") {
+                addHeader("content-type", "application/json")
+                setBody(getJsonFromFile("authorize/authorize-payment-request.json"))
+            }.apply{
+                assertThat(response.status()).isEqualTo(BadRequest)
+                assertThat(response.content).isEqualTo("Payment ID does not match")
             }
         }
     }
